@@ -31,7 +31,8 @@ LcJsTimerApp.prototype.promptAndConfirmAndStartGameTimer = function() {
 	}
 };
 
-LcJsTimerApp.prototype.promptAndConfirmAndStartTravelTimer = function() {
+// Priming it instead of starting it to sync with game timer!
+LcJsTimerApp.prototype.promptAndConfirmAndPrimeTravelTimer = function() {
 	var timeObj = Util.parseMinutesAndSeconds(
 		prompt("Enter travel time in form of X:YY, e.g. 0:30"));
 	if (!timeObj) return;
@@ -39,7 +40,7 @@ LcJsTimerApp.prototype.promptAndConfirmAndStartTravelTimer = function() {
 		":" + timeObj.seconds + "?";
 	if (confirm(confirmString)) {
 		this.setTravelTimer(timeObj.minutes, timeObj.seconds);
-		this.startTravelTimer();
+		this.primeTravelTimer();
 	}
 };
 
@@ -61,6 +62,9 @@ LcJsTimerApp.prototype.onStateChange_ = function(domain, oldState, newState) {
 LcJsTimerApp.prototype.onGameTimerTick_ = function(seconds) {
 	if (this.eventManager_.onGameTimerTick) {
 		this.eventManager_.onGameTimerTick(seconds);
+	}
+	if (this.travelState_ == LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_PRIMED) {
+		this.startTravelTimer();
 	}
 };
 
@@ -89,8 +93,9 @@ LcJsTimerApp.prototype.setState = function(newState) {
 
 LcJsTimerApp.STATES_TRAVEL_ENUM = {};
 LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_NO = 100;
-LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_TRANSIT = 101;
-LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED = 102;
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_PRIMED = 101;
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_TRANSIT = 102;
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED = 103;
 
 LcJsTimerApp.prototype.setTravelState = function(newState) {
 	this.travelState_ = newState;
@@ -140,6 +145,10 @@ LcJsTimerApp.prototype.setTravelTimer = function(minutes, seconds) {
 	this.travelTimer_ = new LcCountdown(
 		Util.minutesAndSecondsToSeconds(minutes, seconds),
 		this.onTravelTimerTick_.bind(this));
+};
+
+LcJsTimerApp.prototype.primeTravelTimer = function() {
+	this.setTravelState(LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_PRIMED);
 };
 
 LcJsTimerApp.prototype.startTravelTimer = function() {
@@ -197,6 +206,13 @@ Util.secondsToMinutesAndSeconds = function(seconds) {
 		minutes: Math.floor(seconds / 60),
 		seconds: seconds % 60
 	};
+};
+
+Util.secondsToMinutesAndSecondsAsPaddedStrings = function(seconds) {
+	var timeObj = Util.secondsToMinutesAndSeconds(seconds);
+	timeObj.minutes = ((timeObj.minutes < 10) ? "0" : "") + timeObj.minutes;
+	timeObj.seconds = ((timeObj.seconds < 10) ? "0" : "") + timeObj.seconds;
+	return timeObj;
 };
 
 //// LC COUNTDOWN
