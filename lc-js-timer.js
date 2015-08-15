@@ -6,7 +6,7 @@ var LcJsTimerApp = function(eventManager) {
 	this.gameTimer_ = null;
 	this.travelTimer_ = null;
 	this.setState(LcJsTimerApp.STATES_ENUM.INITIALIZED);
-	this.setTravelState(LcJsTimerApp.STATES_ENUM.TRAVEL_NO);
+	this.setTravelState(LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_NO);
 };
 
 LcJsTimerApp.prototype.pauseGame = function() {
@@ -22,6 +22,7 @@ LcJsTimerApp.prototype.resumeGame = function() {
 LcJsTimerApp.prototype.promptAndConfirmAndStartGameTimer = function() {
 	var timeObj = Util.parseMinutesAndSeconds(
 		prompt("Enter game time in form of X:YY, e.g. 0:30"));
+	if (!timeObj) return;
 	var confirmString = "Confirm: start game time of " + timeObj.minutes +
 		":" + timeObj.seconds + "?";
 	if (confirm(confirmString)) {
@@ -33,6 +34,7 @@ LcJsTimerApp.prototype.promptAndConfirmAndStartGameTimer = function() {
 LcJsTimerApp.prototype.promptAndConfirmAndStartTravelTimer = function() {
 	var timeObj = Util.parseMinutesAndSeconds(
 		prompt("Enter travel time in form of X:YY, e.g. 0:30"));
+	if (!timeObj) return;
 	var confirmString = "Confirm: start travel time of " + timeObj.minutes +
 		":" + timeObj.seconds + "?";
 	if (confirm(confirmString)) {
@@ -42,7 +44,7 @@ LcJsTimerApp.prototype.promptAndConfirmAndStartTravelTimer = function() {
 };
 
 LcJsTimerApp.prototype.confirmStopTravelTimer = function() {
-	var confirmString = "Confirm: stop travel?";
+	var confirmString = "Confirm: stop travel? (Should only be necesary for debugging.)";
 	if (confirm(confirmString)) {
 		this.stopTravelTimer()
 	};
@@ -50,9 +52,9 @@ LcJsTimerApp.prototype.confirmStopTravelTimer = function() {
 
 //// LcJsTimerApp - events
 
-LcJsTimerApp.prototype.onStateChange_ = function(oldState, newState) {
+LcJsTimerApp.prototype.onStateChange_ = function(domain, oldState, newState) {
 	if (this.eventManager_.onStateChange) {
-		this.eventManager_.onStateChange(oldState, newState);
+		this.eventManager_.onStateChange(domain, oldState, newState);
 	}
 };
 
@@ -63,6 +65,9 @@ LcJsTimerApp.prototype.onGameTimerTick_ = function(seconds) {
 };
 
 LcJsTimerApp.prototype.onTravelTimerTick_ = function(seconds) {
+	if (seconds == 0) {
+		this.setTravelState(LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED);
+	}
 	if (this.eventManager_.onTravelTimerTick) {
 		this.eventManager_.onTravelTimerTick(seconds);
 	}
@@ -71,26 +76,28 @@ LcJsTimerApp.prototype.onTravelTimerTick_ = function(seconds) {
 //// LcJsTimerApp - state details
 
 LcJsTimerApp.STATES_ENUM = {};
-// General state, starting at 1
 LcJsTimerApp.STATES_ENUM.INITIALIZED = 1;
 LcJsTimerApp.STATES_ENUM.IN_PROGRESS = 2;
 LcJsTimerApp.STATES_ENUM.PAUSED = 3;
 LcJsTimerApp.STATES_ENUM.STOPPED = 4;
-// Travel states, starting at 100
-LcJsTimerApp.STATES_ENUM.TRAVEL_NO = 100;
-LcJsTimerApp.STATES_ENUM.TRAVEL_YES = 101;
 
 LcJsTimerApp.prototype.setState = function(newState) {
 	var oldState = this.state_ || null;
 	this.state_ = newState;
-	this.onStateChange_(oldState, this.state_);
+	this.onStateChange_('game', oldState, this.state_);
 };
 
+LcJsTimerApp.STATES_TRAVEL_ENUM = {};
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_NO = 100;
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_TRANSIT = 101;
+LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED = 102;
+
 LcJsTimerApp.prototype.setTravelState = function(newState) {
+	this.travelState_ = newState;
 	var oldState = this.travelState_ || null;
 	this.travelState_ = newState;
-	this.onStateChange_(oldState, this.state_);
-}
+	this.onStateChange_('travel', oldState, this.travelState_);
+};
 
 //// LcJsTimerApp - timer details
 
@@ -136,6 +143,7 @@ LcJsTimerApp.prototype.setTravelTimer = function(minutes, seconds) {
 };
 
 LcJsTimerApp.prototype.startTravelTimer = function() {
+	this.setTravelState(LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_TRANSIT);
 	if (this.travelTimer_) {
 		this.travelTimer_.start();
 	}
@@ -154,6 +162,7 @@ LcJsTimerApp.prototype.resumeTravelTimer = function() {
 };
 
 LcJsTimerApp.prototype.stopTravelTimer = function() {
+	this.setTravelState(LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_NO);
 	if (this.travelTimer_) {
 		this.travelTimer_.stop();
 		this.travelTimer_ = null;
