@@ -11,6 +11,23 @@ $(function(){
 	var T = {};
 	T.timer = Handlebars.compile($("#timer-template").html());
 
+	var AlertBox = {
+		alertNum: 0,
+		pushNewAlert: function(msg) {
+			var alertMsgDomId = 'alertMsg' + AlertBox.alertNum++;
+			$("#alerts").prepend($("<li id='" + alertMsgDomId + "'>" + msg + "</li>"));
+			$("#" + alertMsgDomId).addClass("blink");
+			window.setInterval(function(){
+				$("#" + alertMsgDomId).removeClass("blink");
+			}, 4*1000);
+			window.setInterval(function(){
+				$("#" + alertMsgDomId).fadeOut(1000, function(){
+					$("#" + alertMsgDomId).remove();
+				});
+			}, 15*1000);
+		}	
+	};
+
 	var app = new LcJsTimerApp({
 		onStateChange: function(domain, oldState, newState) {
 			if (domain == 'game') {
@@ -30,25 +47,57 @@ $(function(){
 			}
 		},
 		onGameTimerTick: function(seconds) {
-			$("#game-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)))
+			$("#game-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)));
+
+			switch(seconds) {
+				case 60:
+					AlertBox.pushNewAlert(seconds + "seconds left");
+					break;
+				case 0:
+					AlertBox.pushNewAlert(seconds + "seconds left");
+					break;
+			}
 		},
 		onTravelTimerTick: function(seconds) {
-			$("#travel-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)))
+			$("#travel-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)));
+			switch(seconds) {
+				case 60:
+					break;
+				case 30:
+					break;
+				case 0:
+					break;
+			}
 		}
 	});
-	$("#start-game").click(app.promptAndConfirmAndStartGameTimer.bind(app));
+	$("#start-game").click(function() {
+		app.promptAndConfirmAndStartGameTimer();
+		AlertBox.pushNewAlert("Important updates will appear here.");
+	});
 	$("#start-travel").click(app.promptAndConfirmAndPrimeTravelTimer.bind(app));
-	$("#stop-travel").click(function(){
+	$("#stop-travel").click(function() {
 		app.confirmStopTravelTimer();
-		$("#travel-timer").html();
+		$("#travel-timer").html("");
 	});
 	$("#pause").click(app.pauseGame.bind(app));
 	$("#resume").click(app.resumeGame.bind(app));
 
-	var palette = 1; /* initial */
-	$("#togglePalette").click(function(){
-		$("body").toggleClass("alt-palette");
-	})
+	// Style toggles
+	var font = -1, maxFont = 2, palette = -1, maxPalette = 1;
+	function togglePalette(){
+		$("body").removeClass("palette-" + palette);
+		palette = (palette + 1) % (maxPalette + 1)
+		$("body").addClass("palette-" + palette);
+	}
+	function toggleFont(){
+		$("body").removeClass("font-" + font);
+		font = (font + 1) % (maxFont + 1)
+		$("body").addClass("font-" + font);
+	};
+	$("#togglePalette").click(togglePalette);
+	$("#toggleFont").click(toggleFont);
+	togglePalette();
+	toggleFont();
 });
 </script>
 </head>
@@ -56,21 +105,35 @@ $(function(){
 	<div id="title">
 		<h1>Love Commander</h1>
 		<button id="togglePalette">Toggle Palette</button>
+		<button id="toggleFont">Toggle Font</button>
+	</div>
+	<div class="control-panel alerts-control-panel">
+		<div class="control-panel-label inverse">Alerts</div>
+		<ul id="alerts">
+		</ul>
 	</div>
 	<div class="control-panel">
-		<button id="start-game" class="show-unless-game-started">Start Game</button>
-		<div class="show-if-game-started">
-			<button id="pause" class="show-unless-game-paused">Pause Game</button>
-			<button id="resume" class="show-if-game-paused">Resume Game</button>
+		<div class="control-panel-label inverse">Game Clock</div>
+		<div class="button-bar">
+			<button id="start-game" class="show-unless-game-started">Start Game</button>
+			<div class="show-if-game-started">
+				<button id="pause" class="show-unless-game-paused">Pause Game</button>
+				<button id="resume" class="show-if-game-paused">Resume Game</button>
+			</div>
 		</div>
 		<div id="game-timer" class="timer"></div>
 	</div>
 	<div class="control-panel">
-		<div class="show-if-game-started">
-			<button id="start-travel" class="show-unless-game-travelling">Start Travel</button>
-			<button id="stop-travel" class="show-if-game-travelling">Stop Travel (DEBUG)</button>
+		<div class="control-panel-label inverse">Travel Clock</div>
+		<div class="button-bar">
+			<div class="show-if-game-started">
+				<button id="start-travel" class="show-unless-game-travelling">Start Travel</button>
+				<button id="stop-travel" class="show-if-game-travelling">Stop Travel (DEBUG)</button>
+			</div>
 		</div>
 		<div id="travel-timer" class="timer"></div>
+	</div>
+	<div id="footer">
 	</div>
 
 	<script id="timer-template" type="text/x-handlebars-template">

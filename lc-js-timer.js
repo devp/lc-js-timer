@@ -1,7 +1,6 @@
 //// LcJsTimerApp
 
 var LcJsTimerApp = function(eventManager) {
-	console.log("started LcJsTimerApp");
 	this.eventManager_ = eventManager || {};
 	this.gameTimer_ = null;
 	this.travelTimer_ = null;

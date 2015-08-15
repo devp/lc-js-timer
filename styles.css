@@ -3,10 +3,35 @@ body {
 	flex-direction: column;
 }
 
-body.alt-palette {
+body.palette-0 {
 	background: black;
 	color: #00FF80;
 	border-color: #00FF80;
+}
+
+body.palette-0 .inverse {
+	background: #00FF80;
+	color: black;
+}
+
+body.palette-1 {
+	/* default */
+}
+
+body.palette-1 .inverse {
+	background: black;
+	color: white;
+}
+
+body.font-0 * {
+	font-family: 'VT323', monospace;
+}
+body.font-1 * {
+	font-family: "Futura", "Verdana", "Arial", sans-serif;
+}
+
+body.font-2 * {
+	/* default */
 }
 
 body.game-started .show-unless-game-started,
@@ -20,19 +45,14 @@ body:not(.game-travelling) .show-if-game-travelling
 }
 
 button {
-	font-size: 72px;
-}
-
-#title {
-	text-align: center;
-}
-
-#title button#togglePalette {
 	font-size: 32px;
 }
 
+#title, #footer {
+	text-align: center;
+}
+
 #title h1 {
-	font-family: 'VT323', monospace;
 	font-size: 72px;
 	margin: 0;
 }
@@ -42,14 +62,43 @@ button {
 	border-radius: 25px;
     border: 2px solid;
 	font-size: 144px;
-	/*width: 80%;*/
-	/*max-width: 800px;*/
 	margin: 20px;
 	text-align: center;
 	padding: 20px;	
 }
 
+.control-panel-label {
+	position: absolute;
+	top: -20px;
+	left: 40px;
+	font-size: 32px;
+	padding: 4px;
+}
+
+.button-bar {
+	min-height: 72px;
+}
+
 .timer {
-	font-family: 'VT323', monospace;
 	min-height: 144px;
+}
+
+#alerts {
+	font-size: 36px;
+	list-style: none;
+}
+
+.blink {
+  animation: blink 1s steps(5, start) infinite;
+  -webkit-animation: blink 1s steps(5, start) infinite;
+}
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink {
+  to {
+    visibility: hidden;
+  }
 }
