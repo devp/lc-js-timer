@@ -1,13 +1,47 @@
+//// LcJsTimerApp
+
 var LcJsTimerApp = function() {
 	console.log("started LcJsTimerApp");
 	this.gameTimer_ = null;
+	this.travelTimer_ = null;
 };
 
-LcJsTimerApp.instance_ = null;
+LcJsTimerApp.instance = null;
 
-LcJsTimerApp.start = function() {
-	LcJsTimerApp.instance_ = new LcJsTimerApp();
+LcJsTimerApp.init = function() {
+	return LcJsTimerApp.instance = new LcJsTimerApp();
 };
+
+LcJsTimerApp.prototype.pauseGame = function() {
+	this.pauseGameTimer();
+	this.pauseTravelTimer();
+};
+
+LcJsTimerApp.prototype.promptAndConfirmAndStartGameTimer = function() {
+	var timeObj = Util.parseMinutesAndSeconds(
+		prompt("Enter game time in form of X:YY, e.g. 0:30"));
+	var confirmString = "Confirm: start game time of " + timeObj.minutes +
+		":" + timeObj.seconds + "?";
+	if (confirm(confirmString)) {
+		this.stopGameTimer();
+		this.setGameTimer(timeObj.minutes, timeObj.seconds);
+		this.startGameTimer();
+	}
+};
+
+LcJsTimerApp.prototype.promptAndConfirmAndStartTravelTimer = function() {
+	var timeObj = Util.parseMinutesAndSeconds(
+		prompt("Enter travel time in form of X:YY, e.g. 0:30"));
+	var confirmString = "Confirm: start travel time of " + timeObj.minutes +
+		":" + timeObj.seconds + "?";
+	if (confirm(confirmString)) {
+		this.stopTravelTimer();
+		this.setTravelTimer(timeObj.minutes, timeObj.seconds);
+		this.startTravelTimer();
+	}
+};
+
+//// LcJsTimerApp - timer details
 
 LcJsTimerApp.prototype.setGameTimer = function(minutes, seconds) {
 	this.gameTimer_ = new LcCountdown(
@@ -15,48 +49,77 @@ LcJsTimerApp.prototype.setGameTimer = function(minutes, seconds) {
 		this.onGameTimerTick_);
 };
 
+LcJsTimerApp.prototype.startGameTimer = function() {
+	if (this.gameTimer_) {
+		this.gameTimer_.start();
+	}
+};
+
 LcJsTimerApp.prototype.pauseGameTimer = function() {
 	if (this.gameTimer_) {
 		this.gameTimer_.pause();
 	}
-}
+};
 
 LcJsTimerApp.prototype.stopGameTimer = function() {
 	if (this.gameTimer_) {
 		this.gameTimer_.stop();
+		this.gameTimer_ = null;
 	}
-}
+};
 
 LcJsTimerApp.prototype.onGameTimerTick_ = function(seconds) {
-
+	console.log("TICK: GAME: " + seconds);
 };
 
 LcJsTimerApp.prototype.setTravelTimer = function(minutes, seconds) {
 	this.travelTimer_ = new LcCountdown(
 		Util.minutesAndSecondsToSeconds(minutes, seconds),
-		this.onGameTimerTick_);
+		this.onTravelTimerTick_);
 };
 
-LcJsTimerApp.prototype.pauseGameTimer = function() {
+LcJsTimerApp.prototype.startTravelTimer = function() {
+	if (this.travelTimer_) {
+		this.travelTimer_.start();
+	}
+};
+
+LcJsTimerApp.prototype.pauseTravelTimer = function() {
 	if (this.travelTimer_) {
 		this.travelTimer_.pause();
 	}
-}
+};
 
-LcJsTimerApp.prototype.stopGameTimer = function() {
+LcJsTimerApp.prototype.stopTravelTimer = function() {
 	if (this.travelTimer_) {
 		this.travelTimer_.stop();
+		this.travelTimer_ = null;
 	}
-}
+};
 
-LcJsTimerApp.prototype.onGameTimerTick_ = function(seconds) {
-
+LcJsTimerApp.prototype.onTravelTimerTick_ = function(seconds) {
+	console.log("TICK: TRAVEL: " + seconds);
 };
 
 
 //// Util
 
 var Util = {};
+
+Util.parseMinutesAndSeconds = function(timeString) {
+	var minutes = 0, seconds = 0;
+	var values = timeString.split(":");
+	if (values.length == 1) {
+		seconds = parseInt(values[0]) || 0;
+	} else if (values.length > 1) {
+		minutes = parseInt(values[0]) || 0;
+		seconds = parseInt(values[1]) || 0;
+	}
+	return {
+		minutes: minutes,
+		seconds: seconds
+	};
+};
 
 Util.minutesAndSecondsToSeconds = function(minutes, seconds) {
 	return (seconds || 0) + ((minutes || 0) * 60);
