@@ -183,6 +183,7 @@ LcJsTimerApp.prototype.stopTravelTimer = function() {
 var Util = {};
 
 Util.parseMinutesAndSeconds = function(timeString) {
+	if (!timeString) return null;
 	var minutes = 0, seconds = 0;
 	var values = timeString.split(":");
 	if (values.length == 1) {

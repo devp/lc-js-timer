@@ -1,3 +1,14 @@
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+body.alt-palette {
+	background: black;
+	color: #00FF80;
+	border-color: #00FF80;
+}
+
 body.game-started .show-unless-game-started,
 body:not(.game-started) .show-if-game-started,
 body.game-paused .show-unless-game-paused,
@@ -8,26 +19,37 @@ body:not(.game-travelling) .show-if-game-travelling
 	display: none;
 }
 
-#controls {
-	height: 10%;
+button {
+	font-size: 72px;
 }
 
-#game-timer {
-	height: 30%;
-	width: 80%;
-	margin: 1%;
+#title {
+	text-align: center;
 }
 
-#travel-timer {
-	height: 30%;
-	width: 80%;
-	margin: 1%;
+#title button#togglePalette {
+	font-size: 32px;
+}
+
+#title h1 {
+	font-family: 'VT323', monospace;
+	font-size: 72px;
+	margin: 0;
+}
+
+.control-panel {
+	position: relative;
+	border-radius: 25px;
+    border: 2px solid;
+	font-size: 144px;
+	/*width: 80%;*/
+	/*max-width: 800px;*/
+	margin: 20px;
+	text-align: center;
+	padding: 20px;	
 }
 
 .timer {
-	border-radius: 25px;
-    border: 2px solid #8AC007;
-    padding: 20px; 
-    width: 200px;
-    height: 150px;
+	font-family: 'VT323', monospace;
+	min-height: 144px;
 }
