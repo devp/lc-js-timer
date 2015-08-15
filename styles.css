@@ -1,0 +1,9 @@
+body.game-started .show-unless-game-started,
+body:not(.game-started) .show-if-game-started,
+body:not(.game-started) .show-if-game-started-and-unpaused,
+body.game-paused .show-if-game-started-and-unpaused,
+body:not(.game-started) .show-if-game-started-and-paused,
+body:not(.game-paused) .show-if-game-started-and-paused
+{
+	display: none;
+}
