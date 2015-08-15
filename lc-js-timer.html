@@ -52,11 +52,18 @@ $(function(){
 			$("#game-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)));
 
 			switch(seconds) {
+				case 10 * 60:
+				case 5 * 60:
+				case 2 * 60:
+					AlertBox.pushNewAlert((seconds / 60) + " minutes left in game");
+					break;
 				case 60:
-					AlertBox.pushNewAlert(seconds + "seconds left");
+				case 30:
+					AlertBox.pushNewAlert(seconds + " seconds left in game");
 					break;
 				case 0:
-					AlertBox.pushNewAlert(seconds + "seconds left");
+					AlertBox.pushNewAlert("Game clock ended. Reveal endgame. Start travel now.");
+					app.pauseGame();
 					break;
 			}
 		},
@@ -64,19 +71,25 @@ $(function(){
 			$("#travel-timer").html(T.timer(Util.secondsToMinutesAndSecondsAsPaddedStrings(seconds)));
 			switch(seconds) {
 				case 60:
-					break;
 				case 30:
+				case 10:
+					AlertBox.pushNewAlert(seconds + " seconds until arrival.");
 					break;
 				case 0:
+					AlertBox.pushNewAlert("We have arrived. Game clock paused. Start mission now.");
+					app.pauseGame();
 					break;
 			}
 		}
 	});
 	$("#start-game").click(function() {
 		app.promptAndConfirmAndStartGameTimer();
-		AlertBox.pushNewAlert("Important updates will appear here.");
+		AlertBox.pushNewAlert("Welcome, Commander!");
 	});
-	$("#start-travel").click(app.promptAndConfirmAndPrimeTravelTimer.bind(app));
+	$("#start-travel").click(function() {
+		app.promptAndConfirmAndPrimeTravelTimer();
+		AlertBox.pushNewAlert("Warp drive engaged. En route.");
+	});
 	$("#stop-travel").click(function() {
 		app.confirmStopTravelTimer();
 		$("#travel-timer").html("");

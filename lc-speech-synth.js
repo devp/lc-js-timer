@@ -26,11 +26,10 @@ var LCSpeechSynth = {
 			"Hello Commander", "Hello Commander", "Hello Commander", "Hello Commander",
 			"Greetings Commander", "Greetings Commander", "Greetings Commander",
 			"Commander on bridge", "Commander on bridge", "Commander on bridge",
-			"Incoming alert", "Incoming alert", "Incoming alert",
 			"We missed you commander",
 			"ALL HAIL THE HUMAN FEDERATION!",
 			"Hostile life forms detected",
-			"Have you eaten breakfest today?",
+			"Have you eaten breakfast today?",
 		];
 		var msg = choices[(Math.floor(Math.random() * choices.length))]
 		LCSpeechSynth.tryMessage(msg);

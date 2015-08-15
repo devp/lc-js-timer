@@ -83,6 +83,11 @@ button {
 	min-height: 144px;
 }
 
+body.game-paused #resume {
+	font-size: 144px;
+	padding: 40px;
+}
+
 #alerts {
 	font-size: 36px;
 	list-style: none;
