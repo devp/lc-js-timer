@@ -3,23 +3,46 @@
 <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 <script src="lc-js-timer.js" type="text/javascript"></script>
 <script src="lc-js-timer_test.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="styles.css">
 <script>
 $(function(){
-	var app = LcJsTimerApp.init();
+	var app = new LcJsTimerApp({
+		onStateChange: function(oldState, newState) {
+			$("body").toggleClass(
+				"game-started",
+				((newState == LcJsTimerApp.STATES_ENUM.IN_PROGRESS) ||
+				 (newState == LcJsTimerApp.STATES_ENUM.PAUSED)));
+			$("body").toggleClass(
+				"game-paused",
+				(newState == LcJsTimerApp.STATES_ENUM.PAUSED));
+			$("body").toggleClass(
+				"game-travelling",
+				(newState == LcJsTimerApp.STATES_ENUM.TRAVEL_YES));
+		},
+		onGameTimerTick: function(seconds) {
+			console.log("TICK: GAME: " + seconds);
+		},
+		onTravelTimerTick: function(seconds) {
+			console.log("TICK: TRAVEL: " + seconds);
+		}
+	});
 	$("#game button.start").click(app.promptAndConfirmAndStartGameTimer.bind(app));
 	$("#travel button.start").click(app.promptAndConfirmAndStartTravelTimer.bind(app));
+	$("#pause").click(app.pauseGame.bind(app));
+	$("#resume").click(app.resumeGame.bind(app));
 });
 </script>
 </head>
 <body>
 	<div id="game">
-		<button class="start">Start Game</button>
+		<button class="start show-unless-game-started">Start Game</button>
 	</div>
 	<div id="travel">
-		<button class="start">Start Travel</button>
+		<button class="start show-if-game-started">Start Travel</button>
 	</div>
 	<div id="controls">
-		<button id="pause">Pause</button>
+		<button id="pause" class="show-if-game-started-and-unpaused">Pause</button>
+		<button id="resume" class="show-if-game-started-and-paused">Resume</button>
 	</div>
 </body>
 </html>
