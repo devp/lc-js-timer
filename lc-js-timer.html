@@ -44,21 +44,22 @@ $(function(){
 </script>
 </head>
 <body>
-	<div id="game-timer">
-	</div>
-	<div id="travel-timer">
-	</div>
 	<div id="controls">
-		<button id="start-game" class="show-unless-game-started">Start Game</button>
-		<div class="show-if-game-started">
-			<button id="start-travel" class="show-unless-game-travelling">Start Travel</button>
-			<button id="stop-travel" class="show-if-game-travelling">Stop Travel (DEBUG)</button>
-		</div>
-		<div class="show-if-game-started">
-			<button id="pause" class="show-unless-game-paused">Pause</button>
-			<button id="resume" class="show-if-game-paused">Resume</button>
+		<h1>Love Commander</h1>
+		<div class="control-bar">
+			<button id="start-game" class="show-unless-game-started">Start Game</button>
+			<div class="show-if-game-started">
+				<button id="start-travel" class="show-unless-game-travelling">Start Travel</button>
+				<button id="stop-travel" class="show-if-game-travelling">Stop Travel (DEBUG)</button>
+			</div>
+			<div class="show-if-game-started">
+				<button id="pause" class="show-unless-game-paused">Pause</button>
+				<button id="resume" class="show-if-game-paused">Resume</button>
+			</div>
 		</div>
 	</div>
+	<div id="game-timer" class="timer"></div>
+	<div id="travel-timer" class="timer"></div>
 
 	<script id="timer-template" type="text/x-handlebars-template">
 	  {{minutes}}:{{seconds}}
