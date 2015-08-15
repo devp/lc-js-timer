@@ -45,7 +45,10 @@ $(function(){
 				$("body").toggleClass(
 					"game-travelling",
 					((newState == LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_TRANSIT) ||
-					 (newState == LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED)));		
+					 (newState == LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_ARRIVED)));
+				if (newState == LcJsTimerApp.STATES_TRAVEL_ENUM.TRAVEL_NO) {
+					$("#travel-timer").html("");
+				}
 			}
 		},
 		onGameTimerTick: function(seconds) {
@@ -63,7 +66,6 @@ $(function(){
 					break;
 				case 0:
 					AlertBox.pushNewAlert("Game clock ended. Reveal endgame. Start travel now.");
-					app.pauseGame();
 					break;
 			}
 		},
@@ -77,6 +79,7 @@ $(function(){
 					break;
 				case 0:
 					AlertBox.pushNewAlert("We have arrived. Game clock paused. Start mission now.");
+					app.stopTravelTimer();
 					app.pauseGame();
 					break;
 			}
@@ -92,7 +95,6 @@ $(function(){
 	});
 	$("#stop-travel").click(function() {
 		app.confirmStopTravelTimer();
-		$("#travel-timer").html("");
 	});
 	$("#pause").click(app.pauseGame.bind(app));
 	$("#resume").click(app.resumeGame.bind(app));
